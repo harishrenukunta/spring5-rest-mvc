@@ -2,6 +2,7 @@ package guru.springframework.services;
 
 import guru.springframework.api.v1.mapper.CategoryMapper;
 import guru.springframework.api.v1.model.CategoryDTO;
+import guru.springframework.api.v1.model.CategoryListDTO;
 import guru.springframework.domain.Category;
 import guru.springframework.repository.CategoryRepository;
 import org.aspectj.lang.annotation.Before;
@@ -47,8 +48,8 @@ class CategoryServiceImplTest {
 
         when(categoryRepository.findAll()).thenReturn(mockCategories);
 
-        final List<CategoryDTO> categories = categoryService.getAllCategories();
-        assertThat(categories.size()).isEqualTo(mockCategories.size());
+        final CategoryListDTO categoryListDTO = categoryService.getAllCategories();
+        assertThat(categoryListDTO.getCategories().size()).isEqualTo(mockCategories.size());
     }
 
 
