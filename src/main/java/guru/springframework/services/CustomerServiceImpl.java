@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    public final static String API_URL = "/api/v1/customers/";
 
     public CustomerServiceImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
@@ -20,14 +21,22 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerDTO> getCustomers() {
         return customerRepository.findAll().stream()
-                .map(CustomerMapper.INSTANCE::customerToCustomerDTO)
+                .map(cust -> {
+                    final CustomerDTO customerDTO = CustomerMapper.INSTANCE.customerToCustomerDTO(cust);
+                    customerDTO.setCustomerUrl(API_URL + cust.getId());
+                    return customerDTO;
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
     public CustomerDTO getCustomerById(String customerId) {
         return customerRepository.findById(Long.valueOf(customerId))
-                .map(CustomerMapper.INSTANCE::customerToCustomerDTO)
+                .map(cust -> {
+                    final CustomerDTO customerDTO = CustomerMapper.INSTANCE.customerToCustomerDTO(cust);
+                    customerDTO.setCustomerUrl(API_URL + cust.getId());
+                    return customerDTO;
+                })
                 .orElse(null);
     }
 }

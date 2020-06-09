@@ -44,7 +44,7 @@ class CustomerServiceImplTest {
         when(customerRepository.findAll()).thenReturn(Arrays.asList(customer1, customer2));
 
         final List<CustomerDTO> allCustomers = customerService.getCustomers();
-        assertThat(allCustomers.size()).isGreaterThan(0);
+        assertThat(allCustomers.size()).isGreaterThan(10);
     }
 
     @Test
