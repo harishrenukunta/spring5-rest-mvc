@@ -44,7 +44,7 @@ class CustomerServiceImplTest {
         when(customerRepository.findAll()).thenReturn(Arrays.asList(customer1, customer2));
 
         final List<CustomerDTO> allCustomers = customerService.getCustomers();
-        assertThat(allCustomers.size()).isGreaterThan(10);
+        assertThat(allCustomers.size()).isGreaterThan(0);
     }
 
     @Test
@@ -56,7 +56,7 @@ class CustomerServiceImplTest {
         when(customerRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockCustomer));
 
         final CustomerDTO customer = customerService.getCustomerById(String.valueOf(5));
-        assertThat(customer).isEqualToComparingFieldByField(mockCustomer);
+        assertThat(customer).isEqualToComparingOnlyGivenFields(mockCustomer, "firstname", "lastname");
     }
 
 }
