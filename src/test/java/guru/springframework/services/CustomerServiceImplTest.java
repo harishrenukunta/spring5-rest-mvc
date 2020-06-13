@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +58,30 @@ class CustomerServiceImplTest {
 
         final CustomerDTO customer = customerService.getCustomerById(String.valueOf(5));
         assertThat(customer).isEqualToComparingOnlyGivenFields(mockCustomer, "firstname", "lastname");
+    }
+
+    @Test
+    public void updateCustomer(){
+        final CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setFirstname("Dummyfn");
+        customerDTO.setLastname("Dummyln");
+
+        final Customer customer = new Customer();
+        customer.setFirstname(customerDTO.getFirstname());
+        customer.setLastname(customerDTO.getLastname());
+        customer.setId(1L);
+
+
+        final CustomerDTO updatedCustomerDTO = new CustomerDTO();
+        updatedCustomerDTO.setFirstname(customerDTO.getFirstname());
+        updatedCustomerDTO.setLastname(customerDTO.getLastname());
+        updatedCustomerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
+
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+        final CustomerDTO returnCustomerDTO = customerService.updateCustomer(new Long(1), customerDTO);
+        assertThat(returnCustomerDTO).isEqualToComparingFieldByField(updatedCustomerDTO);
+
+
     }
 
 }
