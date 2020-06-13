@@ -20,9 +20,9 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,6 +81,24 @@ class CustomerControllerTest {
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.firstname", equalTo(customerDTO.getFirstname())))
                 .andExpect(jsonPath("$.lastname", equalTo(customerDTO.getLastname())));
+    }
+
+    @Test
+    public void patchCustomer() throws Exception {
+        final CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setFirstname("Harish patch test");
+        final CustomerDTO returnDtO = new CustomerDTO();
+        returnDtO.setFirstname("Harish");
+        returnDtO.setLastname(customerDTO.getLastname());
+        returnDtO.setCustomerUrl("/api/v1/customers/1");
+        when(customerService.patchCustomer(anyLong(), any(CustomerDTO.class) )).thenReturn(returnDtO);
+        mockMvc.perform(patch("/api/v1/customers/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(customerDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.firstname", equalTo(returnDtO.getFirstname())))
+        .andExpect(jsonPath("$.lastname", equalTo(returnDtO.getLastname())))
+        .andExpect(jsonPath("$.customer_url", equalTo(returnDtO.getCustomerUrl())));
     }
 
     private String asJsonString(final CustomerDTO customerDTO) throws JsonProcessingException {

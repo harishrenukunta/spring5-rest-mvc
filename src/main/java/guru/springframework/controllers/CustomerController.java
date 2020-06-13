@@ -1,9 +1,7 @@
 package guru.springframework.controllers;
 
-import guru.springframework.api.v1.mapper.CustomerMapper;
 import guru.springframework.api.v1.model.CustomerDTO;
 import guru.springframework.api.v1.model.CustomerListDTO;
-import guru.springframework.domain.Customer;
 import guru.springframework.services.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +35,10 @@ public class CustomerController {
     @PutMapping("{id}")
     public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable final Long id, @RequestBody CustomerDTO customerDTO){
         return new ResponseEntity<>(customerService.updateCustomer(id,customerDTO), HttpStatus.OK);
+    }
+
+    @PatchMapping("{id}")
+    public ResponseEntity<CustomerDTO> patchCustomer(@PathVariable Long id, @RequestBody final CustomerDTO customerDTO){
+        return new ResponseEntity(customerService.patchCustomer(id, customerDTO), HttpStatus.OK);
     }
 }
