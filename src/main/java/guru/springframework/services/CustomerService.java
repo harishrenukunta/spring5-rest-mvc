@@ -11,4 +11,5 @@ public interface CustomerService {
     public CustomerDTO addCustomer(CustomerDTO customerDTO);
     public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO);
     public CustomerDTO patchCustomer(final Long id, final CustomerDTO customerDTO);
+    public void deleteByCustomerId(final Long id);
 }

@@ -16,7 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 class CustomerServiceImplTest {
@@ -84,4 +84,11 @@ class CustomerServiceImplTest {
 
     }
 
+    @Test
+    void deleteByCustomerId() {
+        final Long id = 1L;
+        customerRepository.deleteById(id);
+
+        verify(customerRepository,times(1)).deleteById(anyLong());
+    }
 }

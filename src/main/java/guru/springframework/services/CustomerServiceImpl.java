@@ -1,5 +1,6 @@
 package guru.springframework.services;
 
+import guru.springframework.ExceptionHandler.ResourceNotFoundException;
 import guru.springframework.api.v1.mapper.CustomerMapper;
 import guru.springframework.api.v1.model.CustomerDTO;
 import guru.springframework.domain.Customer;
@@ -39,7 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
                     customerDTO.setCustomerUrl(API_URL + cust.getId());
                     return customerDTO;
                 })
-                .orElse(null);
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
@@ -76,6 +77,11 @@ public class CustomerServiceImpl implements CustomerService {
                     dto.setCustomerUrl(API_URL + customer.getId());
                     return dto;
                 })
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Override
+    public void deleteByCustomerId(Long id) {
+        customerRepository.deleteById(id);
     }
 }

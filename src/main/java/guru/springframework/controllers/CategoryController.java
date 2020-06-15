@@ -6,10 +6,7 @@ import guru.springframework.api.v1.model.CategoryListDTO;
 import guru.springframework.services.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 
@@ -24,14 +21,15 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<CategoryListDTO> getCategories(){
-        return new ResponseEntity(categoryService.getAllCategories(), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryListDTO getCategories(){
+        return categoryService.getAllCategories();
     }
 
     @GetMapping("{name}")
-    public ResponseEntity<CategoryDTO> getCategoryByName(@PathVariable final String name){
-        final CategoryDTO category = categoryService.getCategoryByName(name);
-        return new ResponseEntity(category, HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDTO getCategoryByName(@PathVariable final String name){
+        return categoryService.getCategoryByName(name);
     }
 
 

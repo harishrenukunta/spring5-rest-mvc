@@ -2,6 +2,7 @@ package guru.springframework.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.springframework.ExceptionHandler.ResourceNotFoundException;
 import guru.springframework.api.v1.model.CustomerDTO;
 import guru.springframework.services.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +20,7 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,28 +39,43 @@ class CustomerControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(customerController)
+                .setControllerAdvice(new RestResponseEntityControllerAdvice())
+                .build();
     }
 
     @Test
     void getCustomers() throws Exception {
         CustomerDTO customer1 = CustomerDTO.builder()
                 .firstname("Somesh")
-                .lastname("Gowalikar").customerUrl("/api/v1/customers/66").build();
+                .lastname("Gowalikar").customerUrl(getCustomerUrl() + "66").build();
 
         CustomerDTO customer2 = CustomerDTO.builder()
                 .firstname("Ashutosh")
-                .lastname("Rana").customerUrl("/api/v1/customers/95").build();
+                .lastname("Rana").customerUrl(getCustomerUrl() + "95").build();
 
         when(customerService.getCustomers()).thenReturn(Arrays.asList(customer1, customer2));
-        mockMvc.perform(get("/api/v1/customers/")
+        mockMvc.perform(get(getCustomerUrl())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.customers", hasSize(2)));
     }
 
     @Test
-    void getCustomerByID() {
+    void getCustomerByID() throws Exception {
+        final CustomerDTO returnDTO = new CustomerDTO();
+        returnDTO.setFirstname("Mock firstname");
+        returnDTO.setLastname("Mock Lastname");
+        returnDTO.setCustomerUrl(CustomerController.BASE_URL + "1");
+
+        when(customerService.getCustomerById(anyString())).thenReturn(returnDTO);
+
+        mockMvc.perform(get(getCustomerUrl() + "1")
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstname", equalTo(returnDTO.getFirstname())))
+            .andExpect(jsonPath("$.lastname", equalTo(returnDTO.getLastname())))
+            .andExpect(jsonPath("$.customer_url", equalTo(returnDTO.getCustomerUrl())));
     }
 
     @Test
@@ -101,8 +116,26 @@ class CustomerControllerTest {
         .andExpect(jsonPath("$.customer_url", equalTo(returnDtO.getCustomerUrl())));
     }
 
+    @Test
+    public void deleteCustomerById() throws Exception {
+       mockMvc.perform(delete(("/api/v1/customers/1")))
+        .andExpect(status().isNoContent())  ;
+    }
+
+    @Test
+    public void resourceNotFoundException() throws Exception {
+        when(customerService.getCustomerById(anyString())).thenThrow(new ResourceNotFoundException());
+        mockMvc.perform(get(CustomerController.BASE_URL + "29")
+        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
     private String asJsonString(final CustomerDTO customerDTO) throws JsonProcessingException {
         final ObjectMapper om = new ObjectMapper();
         return om.writeValueAsString(customerDTO);
+    }
+
+    private String getCustomerUrl(){
+        return CustomerController.BASE_URL;
     }
 }
