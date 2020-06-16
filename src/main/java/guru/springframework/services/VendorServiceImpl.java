@@ -1,14 +1,17 @@
 package guru.springframework.services;
 
+import guru.springframework.ExceptionHandler.NoVendorsException;
 import guru.springframework.ExceptionHandler.ResourceNotFoundException;
 import guru.springframework.ExceptionHandler.VendorNotFoundException;
 import guru.springframework.api.v1.mapper.VendorMapper;
+import guru.springframework.api.v1.model.ListVendorDTO;
 import guru.springframework.api.v1.model.VendorDTO;
 import guru.springframework.domain.Vendor;
 import guru.springframework.repository.VendorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 

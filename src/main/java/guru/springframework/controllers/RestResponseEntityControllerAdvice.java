@@ -1,5 +1,6 @@
 package guru.springframework.controllers;
 
+import guru.springframework.ExceptionHandler.NoVendorsException;
 import guru.springframework.ExceptionHandler.ResourceNotFoundException;
 import guru.springframework.ExceptionHandler.VendorNotFoundException;
 import org.springframework.http.HttpHeaders;
@@ -28,5 +29,13 @@ public class RestResponseEntityControllerAdvice extends ResponseEntityExceptionH
         map.put("time", LocalDateTime.now().toString());
         map.put("errorText", ex.getMessage());
         return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoVendorsException.class)
+    public ResponseEntity<Object> noVendorExceptionHandler(final NoVendorsException ex, final WebRequest request){
+        final Map<String, String> map = new LinkedHashMap();
+        map.put("time", LocalDateTime.now().toString());
+        map.put("errorText", ex.getMessage());
+        return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

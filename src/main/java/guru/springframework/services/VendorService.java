@@ -1,5 +1,6 @@
 package guru.springframework.services;
 
+import guru.springframework.api.v1.model.ListVendorDTO;
 import guru.springframework.api.v1.model.VendorDTO;
 
 import java.util.List;
