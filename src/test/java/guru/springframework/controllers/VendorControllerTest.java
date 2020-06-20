@@ -1,5 +1,7 @@
 package guru.springframework.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import guru.springframework.api.v1.mapper.VendorMapper;
 import guru.springframework.api.v1.model.ListVendorDTO;
 import guru.springframework.api.v1.model.VendorDTO;
 import guru.springframework.domain.Vendor;
@@ -15,16 +17,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class VendorControllerTest {
+class VendorControllerTest extends BaseTest{
 
     @Mock
     private VendorService vendorService;
@@ -64,5 +68,42 @@ class VendorControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name", equalTo(returnVendorDTO.getName())))
         .andExpect(jsonPath("$.vendor_url", equalTo(returnVendorDTO.getVendorUrl())));
+    }
+
+    @Test
+    public void addVendor() throws Exception {
+        final VendorDTO vendor = VendorDTO.builder().name("Added Vendor").vendorUrl("/api/v1/vendors/1").build();
+        final Vendor ven = VendorMapper.INSTANCE.vendorDTOToVendor(vendor);
+        when(vendorService.addVendor(any(VendorDTO.class))).thenReturn(vendor);
+
+        mockMvc.perform(post("/api/v1/vendors/")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(vendor)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name", equalTo(vendor.getName())))
+                .andExpect(jsonPath("$.vendor_url", equalTo(vendor.getVendorUrl())));
+    }
+
+    @Test
+    public void updateVendor() throws Exception {
+        final Long id = 1L;
+        final VendorDTO inputVendorDTO = new VendorDTO();
+        inputVendorDTO.setName("TesCo Dummy vendor");
+
+        final VendorDTO updatedVendorDTO = new VendorDTO();
+        updatedVendorDTO.setName(inputVendorDTO.getName());
+        updatedVendorDTO.setVendorUrl("/api/v1/vendors/" + id);
+
+        when(vendorService.updateVendor(anyLong(), any(VendorDTO.class)))
+                .thenReturn(updatedVendorDTO);
+
+        mockMvc.perform(put("/api/v1/vendors/" + id)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(inputVendorDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", equalTo(updatedVendorDTO.getName())))
+                .andExpect(jsonPath("$.vendor_url", equalTo(updatedVendorDTO.getVendorUrl())));
     }
 }

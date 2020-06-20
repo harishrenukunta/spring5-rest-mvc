@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -22,16 +23,16 @@ class VendorServiceImplTest {
     @Mock
     private VendorRepository vendorRepository;
 
-    VendorService vendorService;
+    private VendorService vendorService;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         vendorService = new VendorServiceImpl(vendorRepository);
     }
 
     @Test
-    void getVendors() {
+    public void getVendors() {
         Vendor vendor1 = new Vendor();
         vendor1.setName("The Morrisons");
 
@@ -44,7 +45,7 @@ class VendorServiceImplTest {
     }
 
     @Test
-    void getVendorById() {
+    public void getVendorById() {
         final Vendor vendor = new Vendor();
         vendor.setName("Premiere");
         vendor.setId(1L);
@@ -52,5 +53,36 @@ class VendorServiceImplTest {
         final VendorDTO vDTO = VendorMapper.INSTANCE.vendorToVendorDTO(vendor);
         vDTO.setVendorUrl("/api/v1/vendors/1");
         assertThat(vendorService.getVendorById(1L)).isEqualToComparingFieldByField(vDTO);
+    }
+
+    @Test
+    void addVendor(){
+        final VendorDTO vendorDTO = new VendorDTO();
+        vendorDTO.setName("TescoDummyTest");
+        vendorDTO.setVendorUrl("/api/v1/vendors/1");
+
+        final Vendor savedVendor = new Vendor();
+        savedVendor.setName(vendorDTO.getName());
+        savedVendor.setId(1L);
+
+        when(vendorRepository.save(any(Vendor.class))).thenReturn(savedVendor);
+        assertThat(vendorService.addVendor(vendorDTO))
+                .isEqualToComparingFieldByField(vendorDTO);
+    }
+
+    @Test
+    public void updateVendor(){
+        final Vendor vendor = new Vendor();
+        vendor.setName("Sainsbury to be updated");
+        vendor.setId(1L);
+
+        final VendorDTO vendorDTO = new VendorDTO();
+        vendorDTO.setName(vendor.getName());
+        vendorDTO.setVendorUrl("/api/v1/vendors/1");
+
+        when(vendorRepository.save(any(Vendor.class))).thenReturn(vendor);
+
+        assertThat(vendorService.updateVendor(1L, vendorDTO))
+                .isEqualToComparingFieldByField(vendorDTO);
     }
 }

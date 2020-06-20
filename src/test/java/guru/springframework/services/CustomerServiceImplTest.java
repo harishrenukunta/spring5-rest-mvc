@@ -80,8 +80,6 @@ class CustomerServiceImplTest {
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
         final CustomerDTO returnCustomerDTO = customerService.updateCustomer(new Long(1), customerDTO);
         assertThat(returnCustomerDTO).isEqualToComparingFieldByField(updatedCustomerDTO);
-
-
     }
 
     @Test

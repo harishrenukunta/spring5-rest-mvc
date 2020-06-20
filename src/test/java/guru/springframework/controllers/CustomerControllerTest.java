@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CustomerControllerTest {
+class CustomerControllerTest extends BaseTest {
 
     @Mock
     CustomerService customerService;
@@ -130,10 +130,7 @@ class CustomerControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    private String asJsonString(final CustomerDTO customerDTO) throws JsonProcessingException {
-        final ObjectMapper om = new ObjectMapper();
-        return om.writeValueAsString(customerDTO);
-    }
+
 
     private String getCustomerUrl(){
         return CustomerController.BASE_URL;
