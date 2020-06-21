@@ -16,4 +16,6 @@ public interface VendorService {
 
     public VendorDTO updateVendor(final Long id, final VendorDTO vendorDTO);
 
+    public void deleteById(final Long id);
+
 }

@@ -61,4 +61,9 @@ public class VendorServiceImpl implements VendorService {
         updatedVendorDTO.setVendorUrl("/api/v1/vendors/" + id);
         return updatedVendorDTO;
     }
+
+    @Override
+    public void deleteById(Long id) {
+        vendorRepository.deleteById(id);
+    }
 }
